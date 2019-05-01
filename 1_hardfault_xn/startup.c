@@ -12,10 +12,14 @@ void reset_handler(void)
 	extern uint32_t _mydata_vma_end;
 	extern uint32_t _mybss_vma_start;
 	extern uint32_t _mybss_vma_end;
+
+
 	//note that for the variables above, "symbol value" is equivalent to the address we want
 	//use "&" operator to get symbol values
 
-	uint32_t *mydata_lstart_ptr = &_mydata_lma_start;
+
+	//Pointer point to the lma and vma location
+	uint32_t *mydata_lstart_ptr = &_mydata_lma_start; 
 	uint32_t *mydata_vstart_ptr = &_mydata_vma_start;
 	uint32_t *mydata_vend_ptr = &_mydata_vma_end;
 
@@ -27,13 +31,13 @@ void reset_handler(void)
 	src_ptr = mydata_lstart_ptr;
 	dst_ptr = mydata_vstart_ptr;
 
-	while (dst_ptr < mydata_vend_ptr)
+	while (dst_ptr < mydata_vend_ptr)	//Copy LMA to VMA
 		*dst_ptr++ = *src_ptr++;
 
-	dst_ptr = mybss_vstart_ptr;
+	dst_ptr = mybss_vstart_ptr;			//Point to mybss_VMA start
 
-	while (dst_ptr < mybss_vend_ptr)
-		*dst_ptr++ = 0;
+	while (dst_ptr < mybss_vend_ptr)	//While current locaiton < the end of 
+		*dst_ptr++ = 0;					//Fill witl zero into mybss
 
 	set_sysclk_pll();
 
@@ -41,11 +45,42 @@ void reset_handler(void)
 	blink_count(LED_BLUE, 20);
 
 	// execute from 0x40000000
-	??????
+	// Try to execute from a wrong region(On-chip peripheral address space)
 
-	blink(LED_BLUE);
+	//Method 1: The simple way
+	((void(*)(void))0x40000000)(); //A funciton pointer point to specific memory locations
+	//((void(*)(void))0x40000000)(); //Execute the function call
+	//-return type->(void(*)(void)<-input tyep
+
+	//Method 2 step by step to write the function pointer (faild)
+
+	/*
+	void func(void);
+	void (*func_ptr)(void);
+	func_ptr=(*func_ptr)0x40000000;
+	func_ptr();
+	void func(void); //Normal function
+	void (*func_ptr)(void);//Declear function pointer
+	func_ptr=0x40000000; //Point the pointer to the location in the memory
+	func_ptr(); //Execute the function
+	void (*function_pointer)(void);
+        function_pointer=0x40000000;
+	function_pointer();
+	*/
+	//Cast as another varable
+	/*
+	int a=2;
+	float c;
+	c=(float)a;
+	int b;
+	b=(int)2.6;
+	(uint32_t *)0x20000000; //Convert to uint_32t pointer
+	( ()0x4000000)();
+	*/
+
+	blink(LED_BLUE); //THis line will not be execute
 }
-
+//sdfji
 void nmi_handler(void)
 {
 	while (1)

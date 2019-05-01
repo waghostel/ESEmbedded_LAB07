@@ -23,7 +23,7 @@ SECTIONS
 
 	.mybss :
 	{
-		_mybss_vma_start = .;
+		_mybss_vma_start = .; /*   */
 		*(.bss)
 		*(COMMON)
 		_mybss_vma_end = .;

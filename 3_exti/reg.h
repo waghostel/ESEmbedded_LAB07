@@ -107,6 +107,8 @@
 #define SYSCFG_EXTICR1_OFFSET 0x08
 
 #define EXTI0_3_BIT 3
+#define EXTI0_2_BIT 2
+#define EXTI0_1_BIT 1
 #define EXTI0_0_BIT 0
 
 //NVIC
